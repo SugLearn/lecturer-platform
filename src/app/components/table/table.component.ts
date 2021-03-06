@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { TableServiceService } from 'src/app/service/table-service.service';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/service/authentication/auth.service';
+import { TableServiceService } from 'src/app/service/table/table-service.service';
 
 @Component({
   selector: 'app-table',
@@ -9,7 +11,7 @@ import { TableServiceService } from 'src/app/service/table-service.service';
 export class TableComponent implements OnInit {
   student: any;
 
-  constructor(public tablerservice: TableServiceService) { }
+  constructor(public tablerservice: TableServiceService, public authservice: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.tablerservice.get_AllValues().subscribe(data => {
