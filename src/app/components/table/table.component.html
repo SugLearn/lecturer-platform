@@ -1,0 +1,56 @@
+<div class="container">
+
+    <!-- desktop responsive  -->
+    <table class="table-temp  mobile-hide" cellspacing="0">
+    <tbody>
+    <tr class="bg-tr">
+      <th class="custom-size">User Detail</th>
+      <th>DOB</th>
+      <th>KeyMessage</th>
+      <th>University</th>
+      <th>Qualification</th>
+    </tr>
+      <tr *ngFor="let item of student">
+        <div class="user-img-name-age">
+            <img src="{{item.image}}" alt="" title="">
+            <span>{{item.age}}</span>
+            <h3>{{item.name}}</h3>
+          </div>
+        <td>{{item.dob}}</td>
+        <td>{{item.keyMessage}}</td>
+        <td>{{item.university}}</td>
+        <td>{{item.qualification}}</td>
+      </tr>
+    </tbody>
+  </table>
+   <!-- mobile responsive  -->
+   <table class="table-temp  mobile-show" cellspacing="0">
+    <tbody>
+      <tr class="bg-tr">
+        <th width="100%" class="custom-size">User Detail</th>
+
+      </tr>
+      <tr *ngFor="let item of student">
+        <td>
+          <div class="user-img-name-age mobile-img-res">
+            <img src="{{item.image}}" alt="" title="">
+            <span>{{item.age}}</span>
+          </div>
+          <div class="user-img-name-age">
+            <h3>{{item.name}}</h3>
+            <p>{{item.dob}}</p>
+            <p>{{item.qualification}}</p>
+            <p>{{item.university}}</p>
+          </div>
+          <h3>Key Message</h3>
+          <div class="scroll-bar">
+            {{item.keyMessage}}
+          </div>
+        </td>
+      </tr>
+
+
+
+    </tbody>
+  </table>
+  </div>
