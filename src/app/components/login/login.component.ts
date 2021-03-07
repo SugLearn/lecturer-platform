@@ -25,13 +25,13 @@ export class LoginComponent implements OnInit {
   login(){
     this.clearErrorMessage();
     if (this.validateForm(this.email, this.password)) {
-      this.authservice.loginWithEmail(this.email, this.password)
-        .then(() => {
-         this.router.navigate(['/table'])
-        }).catch(_error => {
-          this.error = _error
-          this.router.navigate(['/login'])
-        })
+      this.authservice.login(this.email, this.password)
+        // .then(() => {
+        //  this.router.navigate(['/table'])
+        // }).catch(_error => {
+        //   this.error = _error
+        //   this.router.navigate(['/login'])
+        // })
     }
 
   }

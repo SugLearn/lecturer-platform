@@ -8,62 +8,20 @@ import { AuthService } from 'src/app/service/authentication/auth.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  email = "";
-  password = "";
-  message = '';
-  errorMessage = ''; // validation error handle
-  error: { name: string, message: string } = { name: '', message: '' }; // for firbase error handle
 
+  authError: any;
 
   constructor(private authservice: AuthService, private router:Router) { }
 
-  ngOnInit(): void {
-  }
-
-  clearErrorMessage()
-  {
-    this.errorMessage = '';
-    this.error = {name : '' , message:''};
+  ngOnInit() {
+    this.authservice.eventAuthError$.subscribe( data => {
+      this.authError = data;
+    })
   }
 
 
-  register(){
-    this.clearErrorMessage();
-    if (this.validateForm(this.email, this.password)) {
-    this.authservice.registerWithEmail(this.email, this.password)
-        .then(() => {
-          this.message = "you are register with data on firebase"
-          //this.router.navigate(['/userinfo'])
-        }).catch(_error => {
-          this.error = _error
-          this.router.navigate(['/register'])
-        })
-      }
-
-  }
-
-  validateForm(email, password)
-  {
-    if(email.lenght === 0)
-    {
-      this.errorMessage = "please enter email id";
-      return false;
-    }
-
-    if (password.lenght === 0) {
-      this.errorMessage = "please enter password";
-      return false;
-    }
-
-    if (password.lenght < 6)
-    {
-      this.errorMessage = "password should be at least 6 char";
-      return false;
-    }
-
-    this.errorMessage = '';
-    return true;
-
+  register(frm){
+    this.authservice.createUser(frm.value)
   }
 
 }

@@ -1,73 +1,70 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { auth } from 'firebase';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private eventAuthError = new BehaviorSubject<string>("");
+  eventAuthError$ = this.eventAuthError.asObservable();
   authState: any = null;
-  constructor(private afu: AngularFireAuth, private router: Router) {
-    this.afu.authState.subscribe((auth => {
-      this.authState = auth;
-    }))
+  newUser: any;
+
+  constructor(private afAuth: AngularFireAuth, private router: Router, private db: AngularFirestore,) {
+
   }
 
-  // all firebase getdata functions
-
-  get isUserAnonymousLoggedIn(): boolean {
-    return (this.authState !== null) ? this.authState.isAnonymous : false
+  getUserState() {
+    return this.afAuth.authState;
   }
 
-  get currentUserId(): string {
-    return (this.authState !== null) ? this.authState.uid : ''
-  }
-
-  get currentUserName(): string {
-    return this.authState['email']
-  }
-
-  get currentUser(): any {
-    return (this.authState !== null) ? this.authState : null;
-  }
-
-  get isUserEmailLoggedIn(): boolean {
-    if ((this.authState !== null) && (!this.isUserAnonymousLoggedIn)) {
-      return true
-    } else {
-      return false
-    }
-  }
-
-  //Login service call
-  loginWithEmail(email: string, password: string) {
-    return this.afu.signInWithEmailAndPassword(email, password)
-      .then((user) => {
-        this.authState = user
-      })
+  login( email: string, password: string) {
+    this.afAuth.signInWithEmailAndPassword(email, password)
       .catch(error => {
-        console.log(error)
-        throw error
-      });
+        this.eventAuthError.next(error);
+      })
+      .then(userCredential => {
+        if(userCredential) {
+          this.router.navigate(['/table'])
+        }
+      })
   }
 
   //register service call
-  registerWithEmail(email: string, password: string) {
-    return this.afu.createUserWithEmailAndPassword(email, password)
-      .then((user) => {
-        this.authState = user
+  createUser(user) {
+    this.afAuth.createUserWithEmailAndPassword( user.email, user.password)
+      .then( userCredential => {
+        this.newUser = user;
+        this.insertUserData(userCredential)
+          .then(() => {
+            this.router.navigate(['/table']);
+          });
       })
-      .catch(error => {
-        console.log(error)
-        throw error
+      .catch( error => {
+        this.eventAuthError.next(error);
       });
+  }
+
+  //insert data
+  insertUserData(userCredential: firebase.auth.UserCredential) {
+    return this.db.doc(`Users/${userCredential.user.uid}`).set({
+      email: this.newUser.email,
+      password: this.newUser.password,
+      fullName: this.newUser.fullName,
+      qualification: this.newUser.qualification,
+      university: this.newUser.university,
+      message: 'inserted'
+    })
   }
 
   //signout function
   singout(): void
   {
-    this.afu.signOut();
+    this.afAuth.signOut();
     this.router.navigate(['/login']);
   }
 }
